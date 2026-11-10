@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+/*
+ * Design idea: the app looks like the thing it makes.
+ * White sheets of paper on a cool desk, resume typography (a serif with ruled headings),
+ * a yellow highlighter for words that match a job posting, green for confirmed facts,
+ * and a red pencil for claims that were left out.
+ */
+@theme {
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Source Serif 4', 'Times New Roman', Times, serif;
+
+  --color-desk: #e8ecf1;
+  --color-paper: #ffffff;
+  --color-ink: #16202e;
+  --color-ink-soft: #4a5567;
+  --color-rule: #c5ccd6;
+  --color-marker: #ffe45c;
+  --color-confirmed: #1e7a4f;
+  --color-pencil: #c2372e;
+
+  --shadow-sheet: 0 1px 0 #c5ccd6, 0 12px 28px -18px rgb(22 32 46 / 0.45);
+}
+
+body {
+  @apply bg-desk font-sans text-ink antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* A highlighter stroke behind text, like marking up a printed job posting. */
+.marker {
+  background: linear-gradient(
+    transparent 12%,
+    var(--color-marker) 12%,
+    var(--color-marker) 88%,
+    transparent 88%
+  );
+  padding: 0 0.15em;
+  margin: 0 -0.15em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
