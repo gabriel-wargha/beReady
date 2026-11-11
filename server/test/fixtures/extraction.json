@@ -1,0 +1,8 @@
+{
+  "experiences": [{"ref":"e1","kind":"work","title":"Campus Support Assistant","organization":"Example College","location":"Boise, ID","startDate":"2025-09-01","endDate":null,"isCurrent":true,"url":null,"sortOrder":0,"matchesExperienceId":null}],
+  "facts": [
+    {"ref":"f1","experienceRef":"e1","kind":"achievement","text":"Resolved 120 student support requests using Excel","skillNames":["Excel"],"possibleDuplicateOf":null},
+    {"ref":"f2","experienceRef":"e1","kind":"responsibility","text":"Maintained the student help desk schedule","skillNames":[],"possibleDuplicateOf":null}
+  ],
+  "skills": [{"ref":"s1","name":"Excel","category":"tool"}]
+}

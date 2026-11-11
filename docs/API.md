@@ -228,13 +228,18 @@ curl -b cookies.txt -X PATCH http://localhost:3001/api/v1/me \
 
 ---
 
-# Phase 2 (designed): fact bank
+# Phase 2: fact bank
 
 Every endpoint below needs a session. All can return `401 not_authenticated`; all that take an `:id`
 can return `404 not_found`; all that take a body can return `400 validation_failed` and `403 bad_origin`.
 Only the additional errors are listed per endpoint.
 
 ## Tasks and usage
+
+Task inputs and leases are persisted in Postgres. The local server drains this queue; a separate
+worker can drain the same queue on a hosted Postgres database. A crashed worker is retried after
+its lease expires. Polling only reads status. Daily quota reserves one action per task, atomically,
+including failed actions; retries write separate usage records without using another action.
 
 ### GET /tasks/:id
 
@@ -391,6 +396,11 @@ Errors: `413 file_too_large` · `415 unsupported_file_type` · `422 no_text_foun
 `status`: `processing`, `ready`, `committed`, `failed`. `possibleDuplicateOf` holds the ID of an
 existing fact when the texts overlap by more than 80%.
 
+### DELETE /sources/:id
+
+Erases the saved extracted text and retains the source label on existing facts. Returns `204`.
+A source used by queued or running work returns `409 already_exists`; finish the import first.
+
 ### POST /imports/:id/commit
 
 Saves what the user decided on the review screen. Anything not listed is discarded.
@@ -408,7 +418,12 @@ Saves what the user decided on the review screen. Anything not listed is discard
 
 Response `201`: `{ "created": { "experiences": 1, "facts": 2, "skills": 1 } }`
 
-Errors: `409 already_exists` when the import was already committed.
+Errors: `409 already_exists` when the import was already committed or is not ready.
+References must exist in the proposal, be unique, and include each retained fact's experience.
+Discarded skills are never linked. Optional edits: experience fields, fact `text`/`kind`, skill
+`name`/`category`. An existing experience can be chosen with `matchesExperienceId`.
+A repeated skill name reuses the existing skill without changing its confirmation status.
+`usedIn` includes only confirmed evidence; pending AI text never proves a skill.
 
 ## GitHub
 
@@ -461,7 +476,7 @@ Response `200`:
 }
 ```
 
-Response `204` when nothing is waiting. Facts that a saved job needs come first.
+Response `204` when nothing is waiting. Learning facts are deferred until their learning item is done. Job prioritization arrives in Phase 3.
 
 ### POST /confirmations/:factId
 

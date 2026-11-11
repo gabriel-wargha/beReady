@@ -1,10 +1,13 @@
+import { useQuery } from '@tanstack/react-query';
+import type { List, Fact, Usage } from '@beready/shared';
+import { api } from '../api/client';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import { Alert, Button, Field, RuledHeading, Sheet } from '../components/ui';
 import { useAuth, useAuthActions } from '../hooks/useAuth';
 
-/** The path from a new account to a finished resume. Only the first step exists so far. */
+/** The path from a new account to a finished resume. The fact bank is ready; job matching and documents follow. */
 const path = [
   { title: 'Create your account', text: 'Done. Your data is private to this account.', done: true },
   {
@@ -29,6 +32,7 @@ const path = [
 
 export function Dashboard() {
   const { user } = useAuth();
+  const waiting = useQuery({queryKey: ['bank','waiting'], queryFn: () => api<List<Fact>>('GET','/facts?status=needs_confirmation&limit=1')});
   return (
     <Sheet className="px-6 py-8 sm:px-10 sm:py-10">
       <h1 className="font-serif text-4xl font-bold tracking-tight">Welcome, {user?.name}</h1>
@@ -37,6 +41,7 @@ export function Dashboard() {
         can take you today.
       </p>
 
+      <p className="mt-5"><Link className="font-semibold underline" to="/app/confirm">{waiting.data?.page.total ?? '…'} facts waiting for confirmation</Link></p>
       <div className="mt-8 max-w-2xl">
         <RuledHeading>Your path</RuledHeading>
         <ol>
@@ -61,7 +66,7 @@ export function Dashboard() {
                 </p>
                 <p className="mt-0.5 text-ink-soft">{step.text}</p>
               </div>
-              {step.done ? (
+              {step.phase === 2 ? <span className="text-sm text-confirmed">Ready</span> : step.done ? (
                 <span className="text-sm font-semibold text-confirmed">Done</span>
               ) : (
                 <span className="text-sm text-ink-soft">Not built yet</span>
@@ -89,6 +94,7 @@ export function ComingSoon({ title, text }: { title: string; phase: number; text
 export function Settings() {
   const { user } = useAuth();
   const { updateMe } = useAuthActions();
+  const usage = useQuery({queryKey: ['bank','usage'], queryFn: () => api<Usage>('GET','/me/usage')});
   const [name, setName] = useState(user?.name ?? '');
   const [passwords, setPasswords] = useState({ currentPassword: '', newPassword: '' });
   const [saved, setSaved] = useState<'name' | 'password' | null>(null);
@@ -120,6 +126,7 @@ export function Settings() {
   return (
     <Sheet className="px-6 py-8 sm:px-10 sm:py-10">
       <h1 className="font-serif text-4xl font-bold tracking-tight">Settings</h1>
+      {usage.data && <p className="mt-4">{usage.data.aiActionsToday} of {usage.data.aiDailyLimit} AI actions used today. Resets at {new Date(usage.data.resetsAt).toLocaleTimeString()}.</p>}
       <div className="mt-8 max-w-md space-y-10">
         {general && <Alert>{general}</Alert>}
 

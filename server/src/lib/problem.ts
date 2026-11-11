@@ -9,6 +9,13 @@ const titles: Partial<Record<ErrorCode, string>> = {
   email_taken: 'Email is already registered',
   rate_limited: 'Too many requests',
   internal_error: 'Something went wrong',
+  already_exists: 'Already exists',
+  file_too_large: 'File is too large',
+  unsupported_file_type: 'Unsupported file type',
+  no_text_found: 'No text was found',
+  ai_daily_limit: 'Daily AI limit reached',
+  ai_bad_response: 'AI extraction failed',
+  github_unavailable: 'GitHub is unavailable',
 };
 
 /**

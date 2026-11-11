@@ -20,6 +20,8 @@ const envSchema = z.object({
   GITHUB_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),
   AI_MODEL_SMART: z.string().default('claude-sonnet-5-5'),
   AI_MODEL_FAST: z.string().default('claude-haiku-5-5'),
+  AI_FAST_INPUT_USD_PER_MILLION: z.coerce.number().min(0).default(1),
+  AI_FAST_OUTPUT_USD_PER_MILLION: z.coerce.number().min(0).default(5),
   AI_DAILY_LIMIT: z.coerce.number().int().min(0).default(20),
   AI_MONTHLY_BUDGET_USD: z.coerce.number().min(0).default(20),
   APP_ORIGIN: z.preprocess(emptyToUndefined, z.url().optional()),

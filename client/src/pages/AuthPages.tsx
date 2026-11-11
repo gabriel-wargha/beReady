@@ -44,7 +44,7 @@ export function Signup() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    signup.mutate(form, { onSuccess: () => navigate('/app') });
+    signup.mutate(form, { onSuccess: () => navigate('/app/onboarding') });
   }
 
   return (

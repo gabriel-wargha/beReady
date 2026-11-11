@@ -111,3 +111,14 @@ export const pageSchema = z.object({
   total: z.number(),
 });
 export type Page = z.infer<typeof pageSchema>;
+
+export * from './factBank';
+export const taskSchema = z.object({
+  id: z.string(), type: z.enum(['import_extract', 'github_import']),
+  status: z.enum(['queued', 'running', 'succeeded', 'failed']),
+  result: z.object({resource: z.literal('import'), id: z.string(), href: z.string()}).nullable(),
+  error: problemSchema.nullable(), createdAt: z.string(), finishedAt: z.string().nullable(),
+});
+export type Task = z.infer<typeof taskSchema>;
+export interface AcceptedTask {taskId: string; status: Task['status']}
+export interface Usage {aiActionsToday: number; aiDailyLimit: number; resetsAt: string}

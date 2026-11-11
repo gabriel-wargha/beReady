@@ -7,6 +7,9 @@ import { GuestOnly, RequireAuth } from './components/RequireAuth';
 import './index.css';
 import { ComingSoon, Dashboard, NotFound, Settings } from './pages/AppPages';
 import { Login, Signup } from './pages/AuthPages';
+import { FactBank, Confirmations } from './pages/FactBank';
+import { ImportPage } from './pages/Import';
+import { Onboarding } from './pages/Onboarding';
 import { Landing } from './pages/Landing';
 
 const queryClient = new QueryClient({
@@ -26,16 +29,10 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<RequireAuth />}>
             <Route path="/app" element={<AppLayout />}>
               <Route index element={<Dashboard />} />
-              <Route
-                path="facts"
-                element={
-                  <ComingSoon
-                    title="Fact bank"
-                    phase={2}
-                    text="Add your experience by typing, pasting, uploading or importing from GitHub, then confirm each fact."
-                  />
-                }
-              />
+              <Route path="facts" element={<FactBank />} />
+              <Route path="import" element={<ImportPage />} />
+              <Route path="confirm" element={<Confirmations />} />
+              <Route path="onboarding" element={<Onboarding />} />
               <Route
                 path="jobs"
                 element={

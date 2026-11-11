@@ -23,14 +23,18 @@ export async function api<T>(
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   path: string,
   body?: unknown,
+  idempotencyKey?: string,
 ): Promise<T> {
   let res: Response;
   try {
     res = await fetch(BASE + path, {
       method,
       credentials: 'same-origin',
-      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: {
+        ...(body !== undefined && !(body instanceof FormData) ? {'Content-Type': 'application/json'} : {}),
+        ...(idempotencyKey ? {'Idempotency-Key': idempotencyKey} : {}),
+      },
+      body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
     });
   } catch {
     throw new ApiError({
